@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelajar NU Sedan - Zoom Meeting</title>
+    <!-- Menggunakan Jitsi Meet External API -->
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body, html {
+            height: 100%;
+            background-color: #0ebb31; /* Warna hijau khas NU */
+            color: #ffffff;
+            overflow: hidden;
+        }
+        /* Header Aplikasi */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #06240d;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            height: 70px;
+            position: relative;
+            z-index: 10;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-container img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+        .title-container h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .title-container p {
+            font-size: 0.8rem;
+            color: #a3d9a5;
+        }
+        /* Area Video Conference */
+        #meet-container {
+            width: 100%;
+            height: calc(100vh - 70px);
+            background-color: #111;
+        }
+        /* Halaman Masuk (Welcome Screen) */
+        #welcome-screen {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            background: radial-gradient(circle, #0c3414 0%, #051a0a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            padding: 20px;
+            text-align: center;
+        }
+        .join-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .join-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            color: #333;
+            text-align: center;
+        }
+        .join-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e4a814; /* Warna kuning emas NU */
+            color: #06240d;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .join-box button:hover {
+            background-color: #ffd24d;
+            transform: translateY(-2px);
+        }
+        .logos-big {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .logos-big img {
+            height: 70px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER APLIKASI -->
+    <header>
+        <div class="logo-container">
+            <!-- Logo IPNU (Placeholder - Silakan ganti URL gambarnya jika punya link sendiri) -->
+            <img src="c:\Users\user\Downloads\LOGO-IPNU-IPPNU-removebg-preview.png" alt="Logo IPNU IPPNU">
+        </div>
+        <div class="title-container">
+            <h1>Pelajar NU Sedan</h1>
+            <p>Ruang Meeting Virtual IPNU IPPNU Sedan</p>
+        </div>
+        <div style="width: 120px;"></div> <!-- Penyeimbang layout -->
+    </header>
+
+    <!-- HALAMAN MASUK (WELCOME) -->
+    <div id="welcome-screen">
+        <div class="logos-big">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/Lambang_IPNU.png" alt="IPNU">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_IPPNU.png" alt="IPPNU">
+        </div>
+        <div class="join-box">
+            <h3>Mulai / Gabung Rapat</h3>
+            <p style="font-size: 0.9rem; margin-top: 5px; color: #ccc;">Masukkan nama ruang meeting di bawah ini</p>
+            <input type="text" id="room-name" value="Rapat-Kader-Sedan" placeholder="Contoh: rapat-rutin">
+            <button onclick="startMeeting()">Masuk Room</button>
+        </div>
+    </div>
+
+    <!-- TEMPAT VIDEO ZOOM / JITSI AKAN MUNCUL -->
+    <div id="meet-container"></div>
+
+    <script>
+        function startMeeting() {
+            const roomName = document.getElementById('room-name').value.trim();
+            if (!roomName) {
+                alert('Nama room tidak boleh kosong!');
+                return;
+            }
+
+            // Sembunyikan screen welcome
+            document.getElementById('welcome-screen').style.display = 'none';
+
+            // Konfigurasi Jitsi Meet
+            const domain = 'meet.jit.si';
+            const options = {
+                roomName: 'PelajarNUSedan-' + roomName, // Prefix agar room unik khas Sedan
+                width: '100%',
+                height: '100%',
+                parentNode: document.querySelector('#meet-container'),
+                lang: 'id', // Bahasa Indonesia
+                interfaceConfigOverwrite: {
+                    APP_NAME: 'Pelajar NU Sedan Video Conf',
+                    DISABLE_JOIN_LEAVE_NOTIFICATIONS: false,
+                    SHOW_JITSI_WATERMARK: false,
+                    BRAND_WATERMARK_LINK: '',
+                    DEFAULT_BACKGROUND: '#0c3414'
+                },
+                configOverwrite: {
+                    startWithAudioMuted: false,
+                    startWithVideoMuted: false,
+                    prejoinPageEnabled: true // Menampilkan halaman cek kamera/mic sebelum masuk
+                }
+            };
+
+            // Jalankan aplikasi video
+            const api = new JitsiMeetExternalAPI(domain, options);
+        }
+    </script>
+</body>
+</html>
